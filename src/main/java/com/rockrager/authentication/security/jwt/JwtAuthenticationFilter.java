@@ -33,6 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // Skip authentication for public endpoints
+        if (path.startsWith("/api/auth/") || path.equals("/test")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
@@ -70,6 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
                 log.debug("Authenticated user: {}", userEmail);
             }
         }
@@ -80,7 +89,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        // Skip filter for all auth endpoints
-        return path.startsWith("/api/auth/");
+        return path.startsWith("/api/auth/") || path.equals("/test");
     }
 }
