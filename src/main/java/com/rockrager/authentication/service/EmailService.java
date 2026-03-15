@@ -17,6 +17,12 @@ public class EmailService {
     @Value("${app.base-url}")
     private String baseUrl;
 
+    @Value("${spring.mail.username}")
+    private String smtpUsername;
+
+    @Value("${mail.from.address:${spring.mail.username}}")
+    private String fromAddress;
+
     public void sendVerificationEmail(String to, String token) {
         String subject = "Verify Your Email - RockRager Authentication";
         String verificationLink = baseUrl + "/api/auth/verify-email?token=" + token;
@@ -71,12 +77,15 @@ public class EmailService {
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
-            message.setFrom("RockRanger Auth <mohankumaronly81@gmail.com>");
+            message.setFrom(fromAddress);
+
+            log.info("Attempting to send email from: {} to: {}", fromAddress, to);
 
             mailSender.send(message);
-            log.info("Email sent successfully to: {}", to);
+
+            log.info("✅ Email sent successfully to: {}", to);
         } catch (Exception e) {
-            log.error("Failed to send email to: {}", to, e);
+            log.error("❌ Failed to send email to: {}", to, e);
             throw new RuntimeException("Failed to send email: " + e.getMessage());
         }
     }
