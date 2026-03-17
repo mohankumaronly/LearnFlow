@@ -19,20 +19,27 @@ public class User {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
+    private String fullName;
+
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    // Professor specific fields
+    private String instituteName;
+    private String areaOfExpertise;
+
     @Column(nullable = false)
     private boolean emailVerified = false;
 
-    @Column(nullable = false)
-    private String role = "USER";
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @PrePersist

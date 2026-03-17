@@ -7,6 +7,7 @@ import com.rockrager.authentication.entity.EmailVerificationToken;
 import com.rockrager.authentication.entity.PasswordResetToken;
 import com.rockrager.authentication.entity.RefreshToken;
 import com.rockrager.authentication.entity.User;
+import com.rockrager.authentication.entity.Role;
 import com.rockrager.authentication.repository.EmailVerificationTokenRepository;
 import com.rockrager.authentication.repository.PasswordResetTokenRepository;
 import com.rockrager.authentication.repository.RefreshTokenRepository;
@@ -34,7 +35,7 @@ public class AuthService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final EmailService emailService;  // Add this
+    private final EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -43,13 +44,39 @@ public class AuthService {
             throw new RuntimeException("Email already registered");
         }
 
-        User user = User.builder()
+        // Validate role
+        Role role;
+        try {
+            role = Role.valueOf(request.getRole().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role. Must be either STUDENT or PROFESSOR");
+        }
+
+        // Validate professor fields
+        if (role == Role.PROFESSOR) {
+            if (request.getInstituteName() == null || request.getInstituteName().trim().isEmpty()) {
+                throw new RuntimeException("Institute name is required for professors");
+            }
+            if (request.getAreaOfExpertise() == null || request.getAreaOfExpertise().trim().isEmpty()) {
+                throw new RuntimeException("Area of expertise is required for professors");
+            }
+        }
+
+        // Build user object
+        User.UserBuilder userBuilder = User.builder()
+                .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .emailVerified(false)
-                .role("USER")
-                .build();
+                .role(role)
+                .emailVerified(false);
 
+        // Add professor fields if role is PROFESSOR
+        if (role == Role.PROFESSOR) {
+            userBuilder.instituteName(request.getInstituteName())
+                    .areaOfExpertise(request.getAreaOfExpertise());
+        }
+
+        User user = userBuilder.build();
         User savedUser = userRepository.save(user);
 
         String accessToken = jwtService.generateAccessToken(savedUser.getEmail());
@@ -88,6 +115,9 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .email(savedUser.getEmail())
+                .fullName(savedUser.getFullName())
+                .role(savedUser.getRole().name())
                 .message("User registered successfully. Please check your email for verification link.")
                 .build();
     }
@@ -123,6 +153,9 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .role(user.getRole().name())
                 .message("Login successful")
                 .build();
     }
@@ -150,6 +183,9 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .role(user.getRole().name())
                 .message("Access token refreshed")
                 .build();
     }
