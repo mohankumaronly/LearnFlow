@@ -46,6 +46,9 @@ public class SecurityConfig {
                                 "/v3/api-docs"
                         ).permitAll()
 
+                        // NEW: User endpoints (authenticated users only)
+                        .requestMatchers("/api/users/**").authenticated()
+
                         // Role-based endpoints (optional - create these controllers as needed)
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .requestMatchers("/api/professor/**").hasRole("PROFESSOR")

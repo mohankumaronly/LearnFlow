@@ -15,4 +15,7 @@ public class AuthResponse {
     private String fullName;
     private String role;
     private String message;
+
+    // NEW FIELD: Profile image URL
+    private String profileImage;
 }

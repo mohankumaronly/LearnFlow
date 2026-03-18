@@ -36,6 +36,21 @@ public class CustomUserDetails implements UserDetails {
         return user;
     }
 
+    // NEW METHOD: Get profile image URL
+    public String getProfileImage() {
+        return user.getProfileImage();
+    }
+
+    // NEW METHOD: Get full name
+    public String getFullName() {
+        return user.getFullName();
+    }
+
+    // NEW METHOD: Get user ID
+    public java.util.UUID getId() {
+        return user.getId();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

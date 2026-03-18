@@ -118,6 +118,7 @@ public class AuthService {
                 .email(savedUser.getEmail())
                 .fullName(savedUser.getFullName())
                 .role(savedUser.getRole().name())
+                .profileImage(savedUser.getProfileImage())  // ADDED: profile image
                 .message("User registered successfully. Please check your email for verification link.")
                 .build();
     }
@@ -156,6 +157,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role(user.getRole().name())
+                .profileImage(user.getProfileImage())  // ADDED: profile image
                 .message("Login successful")
                 .build();
     }
@@ -186,6 +188,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role(user.getRole().name())
+                .profileImage(user.getProfileImage())  // ADDED: profile image
                 .message("Access token refreshed")
                 .build();
     }
