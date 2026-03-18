@@ -1,4 +1,4 @@
-package com.rockrager.authentication;
+package com.rockrager;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
