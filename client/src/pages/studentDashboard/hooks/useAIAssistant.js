@@ -38,6 +38,8 @@ export const useAIAssistant = () => {
       // Call AI API
       const response = await sendChatMessage(messageText.trim());
       
+      console.log('Full AI Response:', response); // Debug log
+      
       if (response.success) {
         // Add AI response to chat
         const aiMessage = {
@@ -49,6 +51,7 @@ export const useAIAssistant = () => {
           timestamp: new Date().toISOString()
         };
         
+        console.log('AI Message text length:', aiMessage.text?.length); // Debug log
         setMessages(prev => [...prev, aiMessage]);
         
         // Update current chat ID
