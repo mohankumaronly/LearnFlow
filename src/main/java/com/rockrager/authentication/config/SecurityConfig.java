@@ -46,10 +46,10 @@ public class SecurityConfig {
                                 "/v3/api-docs"
                         ).permitAll()
 
-                        // NEW: User endpoints (authenticated users only)
+                        // User endpoints (authenticated users only)
                         .requestMatchers("/api/users/**").authenticated()
 
-                        // Role-based endpoints (optional - create these controllers as needed)
+                        // Role-based endpoints
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .requestMatchers("/api/professor/**").hasRole("PROFESSOR")
 
@@ -66,31 +66,32 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-
+        // ✅ Your frontend URLs
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",        // Local React dev server
                 "http://localhost:3000",         // Alternative React port
                 "https://your-frontend.onrender.com" // Your production frontend URL
         ));
 
-
+        // ✅ Allow all necessary HTTP methods
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
         ));
 
-
+        // ✅ Allow all headers
         config.setAllowedHeaders(List.of("*"));
 
-
+        // 🔥 CRITICAL: Allow credentials (cookies)
         config.setAllowCredentials(true);
 
-
+        // 🔥 IMPORTANT: Expose headers that frontend might need
         config.setExposedHeaders(List.of(
                 "Authorization",
-                "Content-Disposition"
+                "Content-Disposition",
+                "Set-Cookie"  // ← ADD THIS to expose Set-Cookie headers
         ));
 
-
+        // ✅ Cache preflight requests for 1 hour
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

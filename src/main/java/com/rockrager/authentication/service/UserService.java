@@ -1,5 +1,6 @@
 package com.rockrager.authentication.service;
 
+import com.rockrager.authentication.dto.response.UserDTO;
 import com.rockrager.authentication.entity.User;
 import com.rockrager.authentication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +67,42 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
+    /**
+     * NEW METHOD: Get all users (for admin)
+     */
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * NEW METHOD: Get UserDTO by ID (for admin)
+     */
+    public UserDTO getUserDTOById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return convertToDTO(user);
+    }
+
+    /**
+     * NEW HELPER METHOD: Convert User entity to UserDTO
+     */
+    private UserDTO convertToDTO(User user) {
+        return UserDTO.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .instituteName(user.getInstituteName())
+                .areaOfExpertise(user.getAreaOfExpertise())
+                .emailVerified(user.isEmailVerified())
+                .profileImage(user.getProfileImage())
+                .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null)
+                .updatedAt(user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null)
+                .build();
     }
 }

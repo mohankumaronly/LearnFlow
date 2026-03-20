@@ -1,8 +1,10 @@
 package com.rockrager.authentication.security.jwt;
 
 import com.rockrager.authentication.security.user.CustomUserDetailsService;
+import com.rockrager.authentication.util.CookieUtil;  // ← ADD THIS IMPORT
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;  // ← ADD THIS IMPORT
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final CookieUtil cookieUtil;  // ← ADD THIS
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -75,21 +78,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.warn("This indicates shouldNotFilter() is not being called or is returning false!");
         }
 
-        final String authHeader = request.getHeader("Authorization");
-        log.info("Auth header present: {}", authHeader != null ? "Yes" : "No");
+        // 🔥 CHANGE: Get token from cookie instead of Authorization header
+        String jwt = null;
+        Cookie[] cookies = request.getCookies();
 
-        if (authHeader != null) {
-            log.info("Auth header starts with Bearer? {}", authHeader.startsWith("Bearer "));
+        log.info("Cookies present: {}", cookies != null ? "Yes (" + cookies.length + " cookies)" : "No");
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                log.info("Cookie name: {}, value length: {}", cookie.getName(),
+                        cookie.getValue() != null ? cookie.getValue().length() : 0);
+                if ("accessToken".equals(cookie.getName())) {
+                    jwt = cookie.getValue();
+                    log.info("✅ Found access token in cookie");
+                    break;
+                }
+            }
         }
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.info("No valid Bearer token, continuing chain without authentication");
+        if (jwt == null) {
+            log.info("No access token cookie found, continuing chain without authentication");
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);
-        log.info("JWT token extracted, length: {}", jwt.length());
+        log.info("JWT token extracted from cookie, length: {}", jwt.length());
 
         try {
             final String userEmail = jwtService.extractEmail(jwt);

@@ -61,7 +61,7 @@ const Navigation = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link to="/get-started" className="hidden md:block px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+              <Link to="/signin" className="hidden md:block px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                 Sign In
               </Link>
             </motion.div>

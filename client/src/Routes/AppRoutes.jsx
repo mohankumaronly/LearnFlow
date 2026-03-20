@@ -1,30 +1,125 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import LandingPage from '../pages/landing/LandingPage';
-import RoleSelection from '../pages/RoleSelectionPage/RoleSelection';
-import StudentSignIn from '../pages/auth/StudentAuth/StudentSignIn';
-import StudentSignUp from '../pages/auth/StudentAuth/StudentSignUp';
-import ProfessorSignUp from '../pages/auth/professorSignInAuth/ProfessorSignUp';
-import ProfessorSignIn from '../pages/auth/professorSignInAuth/ProfessorSignIn';
-import StudentDashboard from '../pages/studentDashboard/StudentDashboard';
-import ProfessorDashboard from '../pages/professorDashboard/ProfessorDashboard';
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import ProtectedRoute from "./ProtectedRoute";
+import RoleRoute from "./RoleRoute";
+
+// Landing & Role Selection
+import LandingPage from "../pages/landing/LandingPage";
+import RoleSelection from "../pages/RoleSelectionPage/RoleSelection";
+
+// Auth Pages
+import SignIn from "../pages/auth/SignIn"; // New unified sign-in
+import StudentSignUp from "../pages/auth/studentAuth/StudentSignUp";
+import ProfessorSignUp from "../pages/auth/professorSignInAuth/ProfessorSignUp";
+
+// Dashboards
+import StudentDashboard from "../pages/studentDashboard/StudentDashboard";
+import ProfessorDashboard from "../pages/professorDashboard/ProfessorDashboard";
+
+// Other
+import Unauthorized from "../pages/Unauthorized";
 
 const AppRoutes = () => {
+  const { isAuthenticated, user, loading } = useAuth();
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect authenticated users away from auth pages
+  const AuthRedirect = ({ children }) => {
+    if (isAuthenticated) {
+      if (user?.role === "STUDENT") {
+        return <Navigate to="/student-dashboard" replace />;
+      }
+      if (user?.role === "PROFESSOR") {
+        return <Navigate to="/professor-dashboard" replace />;
+      }
+    }
+    return children;
+  };
+
   return (
     <Routes>
-      {/* Main landing page route */}
+      {/* Public Routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/get-started" element={<RoleSelection />} />
-
-       {/* Student Routes */}
-      <Route path="/student-signin" element={<StudentSignIn />} />
-      <Route path="/student-signup" element={<StudentSignUp />} />
+      <Route path="/role-selection" element={<RoleSelection />} />
       
-      {/* Professor Routes */}
-      <Route path="/professor-signin" element={<ProfessorSignIn />} />
-      <Route path="/professor-signup" element={<ProfessorSignUp />} />
-      <Route path="/student-dashboard" element={<StudentDashboard />} />
-      <Route path="/professor-dashboard" element={<ProfessorDashboard />} />
+      {/* Unified Sign In - handles both student and professor */}
+      <Route 
+        path="/signin" 
+        element={
+          <AuthRedirect>
+            <SignIn />
+          </AuthRedirect>
+        } 
+      />
+      
+      {/* Keep individual sign-in pages for backward compatibility (redirect to unified) */}
+      <Route path="/student-signin" element={<Navigate to="/signin" replace />} />
+      <Route path="/professor-signin" element={<Navigate to="/signin" replace />} />
+      
+      {/* Sign Up - keep separate for role-specific registration */}
+      <Route 
+        path="/student-signup" 
+        element={
+          <AuthRedirect>
+            <StudentSignUp />
+          </AuthRedirect>
+        } 
+      />
+      <Route 
+        path="/professor-signup" 
+        element={
+          <AuthRedirect>
+            <ProfessorSignUp />
+          </AuthRedirect>
+        } 
+      />
+      
+      <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <div>Profile Page (Coming Soon)</div>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Student Only Routes */}
+      <Route
+        path="/student-dashboard"
+        element={
+          <RoleRoute role="STUDENT">
+            <StudentDashboard />
+          </RoleRoute>
+        }
+      />
+
+      {/* Professor Only Routes */}
+      <Route
+        path="/professor-dashboard"
+        element={
+          <RoleRoute role="PROFESSOR">
+            <ProfessorDashboard />
+          </RoleRoute>
+        }
+      />
+
+      {/* 404 Route */}
+      <Route path="*" element={<div>404 - Page Not Found</div>} />
     </Routes>
   );
 };
