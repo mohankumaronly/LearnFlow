@@ -64,8 +64,6 @@ export const login = async (credentials) => {
     });
     console.log("📥 Login raw response:", response.data);
     
-    // ✅ Note: accessToken is now in HTTP-only cookie, not in response body!
-    // The backend should remove accessToken from the response body
     
     return response.data;
   } catch (error) {
@@ -79,7 +77,6 @@ export const refreshAccessToken = async (refreshTokenValue) => {
     const response = await api.post("/auth/refresh", {
       refreshToken: refreshTokenValue
     });
-    // ✅ Note: New access token is set in cookie, not in response body
     return response.data;
   } catch (error) {
     throw handleError(error);
@@ -94,7 +91,6 @@ export const logout = async (refreshTokenValue) => {
   } catch (error) {
     console.error("Logout API error:", error);
   }
-  // ✅ localStorage clearing is handled by AuthContext, not here
 };
 
 export const getProfile = async () => {
@@ -103,7 +99,6 @@ export const getProfile = async () => {
     const response = await api.get("/users/profile");
     console.log("📡 Profile response:", response.data);
     
-    // Store user data in localStorage for persistence
     if (response.data) {
       localStorage.setItem("user", JSON.stringify(response.data));
       console.log("✅ User data stored in localStorage");
