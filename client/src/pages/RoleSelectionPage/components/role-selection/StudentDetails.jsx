@@ -20,7 +20,6 @@ const StudentDetails = ({ onContinue, onSignIn, onBack }) => {
       animate="animate"
       className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
     >
-      {/* Header */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-12 text-white">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
@@ -33,7 +32,6 @@ const StudentDetails = ({ onContinue, onSignIn, onBack }) => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-8">
         <motion.div variants={fadeInUp} className="grid md:grid-cols-2 gap-8 mb-8">
           <div>
@@ -53,7 +51,6 @@ const StudentDetails = ({ onContinue, onSignIn, onBack }) => {
           </div>
         </motion.div>
 
-        {/* Success Stories */}
         <motion.div variants={fadeInUp} className="border-t border-gray-200 dark:border-gray-700 pt-8 mb-8">
           <h3 className="text-xl font-semibold mb-4">Student Success Stories</h3>
           <div className="grid md:grid-cols-2 gap-4">
@@ -63,7 +60,6 @@ const StudentDetails = ({ onContinue, onSignIn, onBack }) => {
           </div>
         </motion.div>
 
-        {/* Action Buttons */}
         <ActionButtons
           role="student"
           onContinue={onContinue}
