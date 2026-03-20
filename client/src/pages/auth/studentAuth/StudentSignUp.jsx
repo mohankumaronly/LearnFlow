@@ -34,7 +34,6 @@ const StudentSignUp = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value
     }));
-    // Clear errors when user starts typing
     if (error) setError("");
   };
 
