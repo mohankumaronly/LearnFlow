@@ -71,7 +71,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",        // Local React dev server
                 "http://localhost:3000",         // Alternative React port
-                "https://your-frontend.onrender.com" // Your production frontend URL
+                "https://minilearnflow.vercel.app" // Your production frontend URL
         ));
 
         // Allow all necessary HTTP methods
