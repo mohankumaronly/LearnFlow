@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, Star, Users, Clock, BookOpen, Play, Award,
   User, GraduationCap, Briefcase, Calendar, CheckCircle,
   Shield, CreditCard, Download, Monitor, MessageCircle,
   ChevronRight, ShoppingCart, Heart, Share2, Info,
-  FileText, Video, Code, Trophy, Zap, Globe, Target
+  FileText, Video, Code, Trophy, Zap, Globe, Target,
+  Menu, X
 } from 'lucide-react';
 import { useDarkMode } from '../../hooks/useDarkMode';
 
@@ -18,6 +19,7 @@ const CourseDetailsPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Mock course data
@@ -66,7 +68,7 @@ By the end of this course, you'll be able to:
         
         stats: {
           totalStudents: "145,678",
-          totalLectures: 1, // Changed to 1 since there's only one video
+          totalLectures: 1,
           totalDuration: "85 hours",
           level: "Beginner to Advanced",
           language: "English",
@@ -173,14 +175,20 @@ By the end of this course, you'll be able to:
   const confirmPurchase = () => {
     setIsEnrolled(true);
     setShowPurchaseModal(false);
-    // Navigate to the single video lecture
     navigate(`/course/${courseId}/video/1`);
   };
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Info },
+    { id: 'instructor', label: 'Instructor', icon: User },
+    { id: 'reviews', label: 'Reviews', icon: Star },
+    { id: 'faq', label: 'FAQ', icon: MessageCircle }
+  ];
 
   if (!course) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center px-4">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400">Loading course details...</p>
         </div>
@@ -190,47 +198,51 @@ By the end of this course, you'll be able to:
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Hero Section */}
+      {/* Hero Section - Responsive */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
           <button
             onClick={() => navigate(-1)}
-            className="mb-6 flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+            className="mb-4 md:mb-6 flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm md:text-base"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
             <span>Back</span>
           </button>
           
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4">{course.title}</h1>
-              <p className="text-lg text-white/90 mb-6">{course.subtitle}</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 leading-tight">
+                {course.title}
+              </h1>
+              <p className="text-sm sm:text-base md:text-lg text-white/90 mb-4 md:mb-6">
+                {course.subtitle}
+              </p>
               
-              <div className="flex flex-wrap items-center gap-6 mb-6">
-                <div className="flex items-center gap-2">
-                  <Star className="w-5 h-5 fill-current text-yellow-400" />
-                  <span className="font-semibold">{course.instructor.rating}</span>
-                  <span className="text-white/70">({course.instructor.reviews.toLocaleString()} reviews)</span>
+              <div className="flex flex-wrap items-center gap-3 md:gap-6 mb-4 md:mb-6">
+                <div className="flex items-center gap-1 md:gap-2">
+                  <Star className="w-4 h-4 md:w-5 md:h-5 fill-current text-yellow-400" />
+                  <span className="font-semibold text-sm md:text-base">{course.instructor.rating}</span>
+                  <span className="text-white/70 text-xs md:text-sm">({course.instructor.reviews.toLocaleString()} reviews)</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  <span>{course.stats.totalStudents} students</span>
+                <div className="flex items-center gap-1 md:gap-2">
+                  <Users className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base">{course.stats.totalStudents} students</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  <span>{course.stats.totalDuration}</span>
+                <div className="flex items-center gap-1 md:gap-2">
+                  <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base">{course.stats.totalDuration}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Video className="w-5 h-5" />
-                  <span>Single Lecture Course</span>
+                <div className="flex items-center gap-1 md:gap-2">
+                  <Video className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base">Single Lecture</span>
                 </div>
               </div>
               
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-3xl font-bold">${course.pricing.currentPrice}</span>
-                  <span className="text-xl line-through text-white/60">${course.pricing.originalPrice}</span>
-                  <span className="bg-green-500 text-white px-2 py-1 rounded text-sm font-semibold">
+                  <span className="text-2xl md:text-3xl font-bold">${course.pricing.currentPrice}</span>
+                  <span className="text-base md:text-xl line-through text-white/60">${course.pricing.originalPrice}</span>
+                  <span className="bg-green-500 text-white px-2 py-1 rounded text-xs md:text-sm font-semibold">
                     {course.pricing.discount}
                   </span>
                 </div>
@@ -238,30 +250,30 @@ By the end of this course, you'll be able to:
                 {!isEnrolled ? (
                   <button
                     onClick={handleEnroll}
-                    className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2"
+                    className="w-full sm:w-auto px-6 md:px-8 py-2 md:py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-sm md:text-base"
                   >
-                    <ShoppingCart className="w-5 h-5" />
+                    <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                     Enroll Now
                   </button>
                 ) : (
                   <Link
                     to={`/course/${courseId}/video/1`}
-                    className="px-8 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center gap-2"
+                    className="w-full sm:w-auto px-6 md:px-8 py-2 md:py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2 text-sm md:text-base"
                   >
-                    <Play className="w-5 h-5" />
+                    <Play className="w-4 h-4 md:w-5 md:h-5" />
                     Start Learning
                   </Link>
                 )}
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">This course includes:</h3>
-              <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 md:p-6 mt-4 lg:mt-0">
+              <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4">This course includes:</h3>
+              <div className="space-y-2 md:space-y-3">
                 {course.features.slice(0, 6).map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
+                  <div key={index} className="flex items-start gap-2 md:gap-3 text-gray-600 dark:text-gray-300">
+                    <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs md:text-sm">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -270,137 +282,149 @@ By the end of this course, you'll be able to:
         </div>
       </div>
       
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex gap-8">
-          {/* Left Sidebar - Tabs */}
-          <div className="w-64 flex-shrink-0">
+      {/* Main Content - Responsive */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        {/* Mobile Tabs Dropdown */}
+        <div className="lg:hidden mb-6">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
+          >
+            <span className="font-medium text-gray-900 dark:text-white">
+              {tabs.find(tab => tab.id === activeTab)?.label}
+            </span>
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
+              >
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ${
+                      activeTab === tab.id
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <tab.icon className="w-5 h-5" />
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Desktop Sidebar - Tabs */}
+          <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-4 space-y-2">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
-                  activeTab === 'overview'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <Info className="w-5 h-5" />
-                <span>Overview</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('instructor')}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
-                  activeTab === 'instructor'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <User className="w-5 h-5" />
-                <span>Instructor</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('reviews')}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
-                  activeTab === 'reviews'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <Star className="w-5 h-5" />
-                <span>Reviews</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('faq')}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
-                  activeTab === 'faq'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span>FAQ</span>
-              </button>
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
+                    activeTab === tab.id
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <tab.icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
             </div>
           </div>
           
-          {/* Right Content */}
+          {/* Right Content - Responsive */}
           <div className="flex-1">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
+                className="space-y-6 md:space-y-8"
               >
                 {/* Course Preview Section */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Play className="w-6 h-6 text-blue-600" />
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-4 md:p-6 shadow-sm">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4 flex items-center gap-2">
+                    <Play className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                     Course Preview
                   </h2>
-                  <div className="aspect-video bg-black rounded-lg overflow-hidden mb-4">
+                  <div className="aspect-video bg-black rounded-lg overflow-hidden mb-3 md:mb-4">
                     <img 
                       src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3" 
                       alt="Course Preview"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">
                     Watch a preview of this comprehensive course. Get a glimpse of what you'll learn and how the instructor teaches.
                   </p>
                 </div>
 
                 {/* Description */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Course Description</h2>
-                  <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">Course Description</h2>
+                  <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                     {course.description}
                   </p>
                 </div>
                 
                 {/* What You'll Learn */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Target className="w-6 h-6 text-blue-600" />
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4 flex items-center gap-2">
+                    <Target className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                     What You'll Learn
                   </h2>
-                  <div className="grid md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
                     {course.whatYouWillLearn.map((item, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700 dark:text-gray-300">{item}</span>
+                        <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm md:text-base text-gray-700 dark:text-gray-300">{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* Requirements */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Zap className="w-6 h-6 text-yellow-500" />
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4 flex items-center gap-2">
+                    <Zap className="w-5 h-5 md:w-6 md:h-6 text-yellow-500" />
                     Requirements
                   </h2>
                   <div className="space-y-2">
                     {course.requirements.map((req, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <ChevronRight className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700 dark:text-gray-300">{req}</span>
+                        <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm md:text-base text-gray-700 dark:text-gray-300">{req}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* Target Audience */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Users className="w-6 h-6 text-purple-600" />
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4 flex items-center gap-2">
+                    <Users className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                     Target Audience
                   </h2>
                   <div className="space-y-2">
                     {course.targetAudience.map((audience, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <ChevronRight className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700 dark:text-gray-300">{audience}</span>
+                        <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm md:text-base text-gray-700 dark:text-gray-300">{audience}</span>
                       </div>
                     ))}
                   </div>
@@ -413,28 +437,28 @@ By the end of this course, you'll be able to:
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+                className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm"
               >
-                <div className="flex items-start gap-6 mb-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 mb-6">
                   <img
                     src={course.instructor.avatar}
                     alt={course.instructor.name}
-                    className="w-24 h-24 rounded-full"
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-full"
                   />
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{course.instructor.name}</h2>
-                    <p className="text-blue-600 dark:text-blue-400 font-medium mb-2">{course.instructor.title}</p>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{course.instructor.name}</h2>
+                    <p className="text-sm md:text-base text-blue-600 dark:text-blue-400 font-medium mb-2">{course.instructor.title}</p>
+                    <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm text-gray-600 dark:text-gray-400">
                       <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
+                        <Users className="w-3 h-3 md:w-4 md:h-4" />
                         {course.instructor.students} students
                       </span>
                       <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4" />
+                        <Star className="w-3 h-3 md:w-4 md:h-4" />
                         {course.instructor.rating} rating
                       </span>
                       <span className="flex items-center gap-1">
-                        <BookOpen className="w-4 h-4" />
+                        <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
                         {course.instructor.courses} courses
                       </span>
                     </div>
@@ -443,37 +467,37 @@ By the end of this course, you'll be able to:
                 
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">About the Instructor</h3>
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{course.instructor.bio}</p>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2">About the Instructor</h3>
+                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed">{course.instructor.bio}</p>
                   </div>
                   
-                  <div className="grid md:grid-cols-2 gap-4 pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 pt-4">
                     <div className="flex items-center gap-2">
-                      <Briefcase className="w-5 h-5 text-gray-500" />
+                      <Briefcase className="w-4 h-4 md:w-5 md:h-5 text-gray-500" />
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Current Company</p>
-                        <p className="font-medium text-gray-900 dark:text-white">{course.instructor.company}</p>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">Current Company</p>
+                        <p className="text-sm md:text-base font-medium text-gray-900 dark:text-white">{course.instructor.company}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Award className="w-5 h-5 text-gray-500" />
+                      <Award className="w-4 h-4 md:w-5 md:h-5 text-gray-500" />
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Experience</p>
-                        <p className="font-medium text-gray-900 dark:text-white">{course.instructor.experience}</p>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">Experience</p>
+                        <p className="text-sm md:text-base font-medium text-gray-900 dark:text-white">{course.instructor.experience}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <GraduationCap className="w-5 h-5 text-gray-500" />
+                      <GraduationCap className="w-4 h-4 md:w-5 md:h-5 text-gray-500" />
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Education</p>
-                        <p className="font-medium text-gray-900 dark:text-white">{course.instructor.education}</p>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">Education</p>
+                        <p className="text-sm md:text-base font-medium text-gray-900 dark:text-white">{course.instructor.education}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Globe className="w-5 h-5 text-gray-500" />
+                      <Globe className="w-4 h-4 md:w-5 md:h-5 text-gray-500" />
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Previous Experience</p>
-                        <p className="font-medium text-gray-900 dark:text-white">
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">Previous Experience</p>
+                        <p className="text-sm md:text-base font-medium text-gray-900 dark:text-white">
                           {course.instructor.previousCompanies.join(', ')}
                         </p>
                       </div>
@@ -481,10 +505,10 @@ By the end of this course, you'll be able to:
                   </div>
                   
                   <div className="pt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Expertise</h3>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-3">Expertise</h3>
                     <div className="flex flex-wrap gap-2">
                       {course.instructor.expertise.map((skill, index) => (
-                        <span key={index} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full text-sm">
+                        <span key={index} className="px-2 md:px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full text-xs md:text-sm">
                           {skill}
                         </span>
                       ))}
@@ -499,19 +523,19 @@ By the end of this course, you'll be able to:
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-4 md:space-y-6"
               >
                 {/* Rating Summary */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center gap-6">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                  <div className="flex items-center gap-4 md:gap-6">
                     <div className="text-center">
-                      <div className="text-5xl font-bold text-gray-900 dark:text-white">{course.instructor.rating}</div>
-                      <div className="flex items-center justify-center gap-1 mt-2">
+                      <div className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">{course.instructor.rating}</div>
+                      <div className="flex items-center justify-center gap-0.5 md:gap-1 mt-1 md:mt-2">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 fill-current text-yellow-400" />
+                          <Star key={i} className="w-4 h-4 md:w-5 md:h-5 fill-current text-yellow-400" />
                         ))}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {course.instructor.reviews.toLocaleString()} reviews
                       </div>
                     </div>
@@ -520,22 +544,22 @@ By the end of this course, you'll be able to:
                 
                 {/* Individual Reviews */}
                 {course.reviews.map((review) => (
-                  <div key={review.id} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                    <div className="flex items-start gap-4">
-                      <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full" />
+                  <div key={review.id} className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                    <div className="flex items-start gap-3 md:gap-4">
+                      <img src={review.avatar} alt={review.name} className="w-10 h-10 md:w-12 md:h-12 rounded-full" />
                       <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900 dark:text-white">{review.name}</h4>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">{review.date}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
+                          <h4 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white">{review.name}</h4>
+                          <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{review.date}</span>
                         </div>
                         <div className="flex items-center gap-1 mb-2">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-4 h-4 ${i < Math.floor(review.rating) ? 'fill-current text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                            <Star key={i} className={`w-3 h-3 md:w-4 md:h-4 ${i < Math.floor(review.rating) ? 'fill-current text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} />
                           ))}
-                          <span className="text-sm text-gray-500 ml-2">{review.rating}</span>
+                          <span className="text-xs md:text-sm text-gray-500 ml-1 md:ml-2">{review.rating}</span>
                         </div>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">{review.comment}</p>
-                        <button className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                        <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-2 md:mb-3">{review.comment}</p>
+                        <button className="text-xs md:text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                           Helpful ({review.helpful})
                         </button>
                       </div>
@@ -550,12 +574,12 @@ By the end of this course, you'll be able to:
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
+                className="space-y-3 md:space-y-4"
               >
                 {course.faqs.map((faq, index) => (
-                  <div key={index} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{faq.question}</h3>
-                    <p className="text-gray-600 dark:text-gray-300">{faq.answer}</p>
+                  <div key={index} className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2">{faq.question}</h3>
+                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">{faq.answer}</p>
                   </div>
                 ))}
               </motion.div>
@@ -564,46 +588,49 @@ By the end of this course, you'll be able to:
         </div>
       </div>
       
-      {/* Purchase Modal */}
-      {showPurchaseModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6"
-          >
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Confirm Enrollment</h2>
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">Course Price</span>
-                <span className="font-semibold text-gray-900 dark:text-white">${course.pricing.currentPrice}</span>
+      {/* Purchase Modal - Responsive */}
+      <AnimatePresence>
+        {showPurchaseModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full mx-4 p-4 md:p-6"
+            >
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4">Confirm Enrollment</h2>
+              <div className="space-y-2 md:space-y-3 mb-4 md:mb-6">
+                <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                  <span className="text-sm md:text-base text-gray-600 dark:text-gray-400">Course Price</span>
+                  <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-white">${course.pricing.currentPrice}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                  <span className="text-sm md:text-base text-gray-600 dark:text-gray-400">Tax (GST)</span>
+                  <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-white">$0.00</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-base md:text-lg font-bold text-gray-900 dark:text-white">Total</span>
+                  <span className="text-lg md:text-xl font-bold text-blue-600">${course.pricing.currentPrice}</span>
+                </div>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">Tax (GST)</span>
-                <span className="font-semibold text-gray-900 dark:text-white">$0.00</span>
+              <div className="space-y-2 md:space-y-3">
+                <button
+                  onClick={confirmPurchase}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 md:py-3 rounded-lg font-semibold transition-colors text-sm md:text-base"
+                >
+                  Confirm Purchase
+                </button>
+                <button
+                  onClick={() => setShowPurchaseModal(false)}
+                  className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 md:py-3 rounded-lg font-semibold transition-colors text-sm md:text-base"
+                >
+                  Cancel
+                </button>
               </div>
-              <div className="flex justify-between py-2">
-                <span className="text-lg font-bold text-gray-900 dark:text-white">Total</span>
-                <span className="text-xl font-bold text-blue-600">${course.pricing.currentPrice}</span>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <button
-                onClick={confirmPurchase}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors"
-              >
-                Confirm Purchase
-              </button>
-              <button
-                onClick={() => setShowPurchaseModal(false)}
-                className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg font-semibold transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
