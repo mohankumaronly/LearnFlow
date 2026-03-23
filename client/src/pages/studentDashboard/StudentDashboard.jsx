@@ -8,6 +8,7 @@ import { useResponsive } from './hooks/useResponsive';
 import { useFilters } from './hooks/useFilters';
 
 // Layout Components
+
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileMenu } from './components/layout/MobileMenu';
 import { Header } from './components/layout/Header';
