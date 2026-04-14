@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import StudentDetails from "./StudentDetails";
@@ -5,13 +6,15 @@ import ProfessorDetails from "./ProfessorDetails";
 import { ROLES } from "../constants/roles";
 
 const RoleDetails = ({ selectedRole, onBack, onContinue, onSignIn }) => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [selectedRole]); 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto"
     >
-      {/* Back Button */}
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-gray-600 dark:text-gray-300 

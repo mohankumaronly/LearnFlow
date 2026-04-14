@@ -12,7 +12,6 @@ import {
   professorStats 
 } from "./components/constants/roles";
 
-// Role data
 const roles = [
   {
     id: "student",
@@ -52,7 +51,6 @@ const RoleSelection = () => {
     <div className="min-h-screen bg-white dark:bg-primary-dark text-gray-900 dark:text-white transition-colors">
       <SimpleNav />
 
-      {/* Main Content */}
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {!showDetails ? (
@@ -71,7 +69,6 @@ const RoleSelection = () => {
           )}
         </div>
       </div>
-
       <TrustBadges />
     </div>
   );
